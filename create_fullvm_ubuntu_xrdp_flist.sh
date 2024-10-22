@@ -63,6 +63,24 @@ apt-get clean
 # Set correct ownership and permissions for sudo
 chown root:root /usr/bin/sudo
 chmod 4755 /usr/bin/sudo
+
+# Create the systemd service file for setting sudo permissions
+cat << EOF2 > /etc/systemd/system/set-sudo-permissions.service
+[Unit]
+Description=Set correct ownership and permissions for sudo
+Before=ssh.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c '/bin/chown root:root /usr/bin/sudo && /bin/chmod 4755 /usr/bin/sudo'
+
+[Install]
+WantedBy=multi-user.target
+EOF2
+
+# Enable the service
+systemctl enable set-sudo-permissions.service
+
 EOF
 
 chmod +x ubuntu-noble/root/setup_inside_chroot.sh
