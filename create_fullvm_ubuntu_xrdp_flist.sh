@@ -38,7 +38,10 @@ echo 'fs-virtiofs' >> /etc/initramfs-tools/modules
 update-initramfs -c -k all
 
 # Install XFCE and XRDP
-apt-get install xfce4 xfce4-goodies xrdp -y
+apt-get install xfce4 xfce4-goodies xrdp sudo -y
+
+# Set correct permissions for sudo
+chmod u+s /usr/bin/sudo
 
 # Create a non-root user for XRDP
 useradd -m -s /bin/bash xrdpuser

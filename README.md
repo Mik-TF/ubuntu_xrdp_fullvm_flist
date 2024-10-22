@@ -57,6 +57,7 @@ This repository contains a script to create a Full VM flist with Ubuntu and XRDP
 ## Notes
 
 - The default non-root user created is `xrdpuser` with password `xrdppassword`. It's recommended to change this password after first login.
+  - You can update your password with the command `sudo passwd`
 - The script requires an active internet connection throughout its execution.
 - Ensure you have the latest version of the script by pulling from this repository before each use.
 
