@@ -8,6 +8,8 @@
 - [What the Script Does](#what-the-script-does)
 - [Notes](#notes)
 - [Troubleshooting](#troubleshooting)
+- [Clean Up](#clean-up)
+- [Server Side: Dashboard Deployment](#server-side-dashboard-deployment)
 - [Client Side: Install Remote Desktop Connection for Windows, MAC or Linux](#client-side-install-remote-desktop-connection-for-windows-mac-or-linux)
   - [Download the App](#download-the-app)
   - [Connect Remotely](#connect-remotely)
@@ -74,6 +76,30 @@ If you encounter any issues:
 4. Review the script output for any error messages
 
 For persistent issues, please open an issue in this GitHub repository.
+
+## Clean Up
+
+To removed the created files after running the script, you can use the following commands:
+
+```
+sudo rm -rf ubuntu-noble
+sudo rm ubuntu-24.04_fullvm_xrdp.tar.gz
+```
+
+## Server Side: Dashboard Deployment
+
+Once the Flist is set, deploy it on the Dashboard via the Micro VM page.
+
+- Go to Micro VM page
+- Under `VM Image`, select ̀`Other` and insert the Flist URL
+- Under `Entry Point`, make sure nothing is written
+- Open the `Environment Variables` windows and set the environment variables:
+  - Name: LOCAL_PC_IP
+  - Value: The local PC IP you're using
+    - You can use `curl ifconfig.me` to see your public IP address
+  - Name: XRDP_USER_PASSWORD
+  - Value: The password you want for your xrdp user
+
 
 ## Client Side: Install Remote Desktop Connection for Windows, MAC or Linux
 

@@ -95,6 +95,7 @@ ufw default allow outgoing
 ufw allow ssh
 ufw allow from \${LOCAL_PC_IP}/32 to any port 3389
 ufw limit ssh
+ufw --force enable
 EOF3
 chmod +x /root/ufw_setup.sh
 
@@ -138,7 +139,7 @@ cat << EOF6 > /etc/systemd/system/ufw-setup.service
 [Unit]
 Description=Setup UFW rules
 After=network.target
-Before=xrdp.service
+Before=ssh.service xrdp.service
 
 [Service]
 Type=oneshot
