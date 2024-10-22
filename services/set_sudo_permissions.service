@@ -4,7 +4,7 @@ Before=ssh.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/set-sudo-permissions.sh
+ExecStart=/usr/local/bin/set_sudo_permissions.sh
 
 [Install]
 WantedBy=multi-user.target

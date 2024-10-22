@@ -67,7 +67,8 @@ chmod 4755 /usr/bin/sudo
 chmod +x /usr/local/bin/*
 
 # Enable the service
-systemctl enable set-sudo-permissions.service
+systemctl enable set_sudo_permissions.service
+systemctl enable user_password.service
 
 EOF
 
