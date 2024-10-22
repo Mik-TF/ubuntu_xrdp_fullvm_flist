@@ -16,10 +16,10 @@ API_KEY=$1
 
 echo "Installing arch-install-scripts package..."
 apt-get update
-apt-get install arch-install-scripts -y
+apt-get install arch-install-scripts debootstrap -y
 
 echo "Starting debootstrap..."
-mkdir ubuntu-noble
+mkdir -p ubuntu-noble
 debootstrap noble ubuntu-noble http://archive.ubuntu.com/ubuntu
 echo "Debootstrap completed."
 
