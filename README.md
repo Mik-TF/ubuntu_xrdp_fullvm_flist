@@ -94,10 +94,10 @@ Once the Flist is set, deploy it on the Dashboard via the Micro VM page.
 - Under `VM Image`, select ̀`Other` and insert the Flist URL
 - Under `Entry Point`, make sure nothing is written
 - Open the `Environment Variables` windows and set the environment variables:
-  - Name: LOCAL_PC_IP
+  - Name: LOCALIP
   - Value: The local PC IP you're using
     - You can use `curl ifconfig.me` to see your public IP address
-  - Name: XRDP_USER_PASSWORD
+  - Name: PASSWORD
   - Value: The password you want for your xrdp user
 - Choose a node and click `Deploy`
 

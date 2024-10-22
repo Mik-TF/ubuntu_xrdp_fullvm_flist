@@ -93,7 +93,7 @@ source /mnt/zosrc
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow ssh
-ufw allow from \${LOCAL_PC_IP}/32 to any port 3389
+ufw allow from \${LOCALIP}/32 to any port 3389
 ufw limit ssh
 ufw --force enable
 EOF3
@@ -127,9 +127,9 @@ fi
 
 source /mnt/zosrc
 
-# Only change password if XRDP_USER_PASSWORD is set
-if [ -n "\${XRDP_USER_PASSWORD}" ]; then
-    echo "xrdpuser:\${XRDP_USER_PASSWORD}" | chpasswd
+# Only change password if PASSWORD is set
+if [ -n "\${PASSWORD}" ]; then
+    echo "xrdpuser:\${PASSWORD}" | chpasswd
 fi
 EOF5
 chmod +x /root/xrdp_user.sh
