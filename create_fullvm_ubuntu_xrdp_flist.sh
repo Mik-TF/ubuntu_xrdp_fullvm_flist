@@ -40,9 +40,6 @@ update-initramfs -c -k all
 # Install XFCE and XRDP
 apt-get install xfce4 xfce4-goodies xrdp sudo -y
 
-# Set correct permissions for sudo
-chmod u+s /usr/bin/sudo
-
 # Create a non-root user for XRDP
 useradd -m -s /bin/bash xrdpuser
 echo "xrdpuser:xrdppassword" | chpasswd
@@ -51,6 +48,9 @@ usermod -aG sudo xrdpuser
 # Configure XRDP for the new user
 echo "xfce4-session" > /home/xrdpuser/.xsession
 chown xrdpuser:xrdpuser /home/xrdpuser/.xsession
+
+# Set correct permissions for sudo
+chmod u+s /usr/bin/sudo
 
 # Configure XRDP
 sed -i 's/allowed_users=console/allowed_users=anybody/' /etc/X11/Xwrapper.config

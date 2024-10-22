@@ -8,6 +8,10 @@
 - [What the Script Does](#what-the-script-does)
 - [Notes](#notes)
 - [Troubleshooting](#troubleshooting)
+- [Client Side: Install Remote Desktop Connection for Windows, MAC or Linux](#client-side-install-remote-desktop-connection-for-windows-mac-or-linux)
+  - [Download the App](#download-the-app)
+  - [Connect Remotely](#connect-remotely)
+- [Conclusion](#conclusion)
 - [License](#license)
 
 ---
@@ -70,6 +74,35 @@ If you encounter any issues:
 4. Review the script output for any error messages
 
 For persistent issues, please open an issue in this GitHub repository.
+
+## Client Side: Install Remote Desktop Connection for Windows, MAC or Linux
+
+For the client side (the local computer accessing the VM remotely), you can use remote desktop connection for Windows, MAC and Linux. The process is very similar in all three cases.
+
+Simply download the app, open it and write the IPv4 address of the VM. You then will need to write the username and password to enter into your VM.
+
+### Download the App
+
+* Client side Remote app
+  * Windows
+    * [Remote Desktop Connection app](https://apps.microsoft.com/store/detail/microsoft-remote-desktop/9WZDNCRFJ3PS?hl=en-ca&gl=ca&rtc=1)
+  * MAC
+    * Download in app store
+      *  [Microsoft Remote Desktop Connection app](https://apps.apple.com/ca/app/microsoft-remote-desktop/id1295203466?mt=12)
+  * Linux
+    * [Remmina RDP Client](https://remmina.org/)
+ 
+### Connect Remotely
+
+* General process
+  * In the Remote app, enter the following:
+    * the IPv4 Address of the VM
+    * the VM root-access username and password
+  * You now have remote desktop connection to your VM
+
+## Conclusion
+
+You now have a remote access to the desktop environment of your VM.
 
 ## License
 
