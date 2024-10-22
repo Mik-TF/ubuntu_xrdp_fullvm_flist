@@ -49,9 +49,6 @@ usermod -aG sudo xrdpuser
 echo "xfce4-session" > /home/xrdpuser/.xsession
 chown xrdpuser:xrdpuser /home/xrdpuser/.xsession
 
-# Set correct permissions for sudo
-chmod u+s /usr/bin/sudo
-
 # Configure XRDP
 sed -i 's/allowed_users=console/allowed_users=anybody/' /etc/X11/Xwrapper.config
 systemctl enable xrdp
@@ -62,6 +59,10 @@ ufw allow ssh
 echo "y" | ufw enable
 
 apt-get clean
+
+# Set correct ownership and permissions for sudo
+chown root:root /usr/bin/sudo
+chmod 4755 /usr/bin/sudo
 EOF
 
 chmod +x ubuntu-noble/root/setup_inside_chroot.sh
@@ -73,6 +74,17 @@ echo "Chroot setup completed."
 echo "Cleaning up..."
 rm ubuntu-noble/root/setup_inside_chroot.sh
 rm -rf ubuntu-noble/dev/*
+
+echo "Checking for extract-vmlinux..."
+if ! command -v extract-vmlinux &>/dev/null; then
+    echo "extract-vmlinux not found, installing..."
+    curl -O https://raw.githubusercontent.com/torvalds/linux/master/scripts/extract-vmlinux
+    chmod +x extract-vmlinux
+    mv extract-vmlinux /usr/local/bin
+fi
+echo "Extracting kernel..."
+extract-vmlinux ubuntu-noble/boot/vmlinuz | tee ubuntu-noble/boot/vmlinuz-6.8.0-31-generic.elf > /dev/null
+mv ubuntu-noble/boot/vmlinuz-6.8.0-31-generic.elf ubuntu-noble/boot/vmlinuz-6.8.0-31-generic
 
 echo "Creating tar archive..."
 tar -czvf ubuntu-24.04_fullvm_xrdp.tar.gz -C ubuntu-noble .
