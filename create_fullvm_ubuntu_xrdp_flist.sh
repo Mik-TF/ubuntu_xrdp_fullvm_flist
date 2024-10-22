@@ -74,18 +74,6 @@ echo "Cleaning up..."
 rm ubuntu-noble/root/setup_inside_chroot.sh
 rm -rf ubuntu-noble/dev/*
 
-echo "Checking for extract-vmlinux..."
-if ! command -v extract-vmlinux &>/dev/null; then
-    echo "extract-vmlinux not found, installing..."
-    curl -O https://raw.githubusercontent.com/torvalds/linux/master/scripts/extract-vmlinux
-    chmod +x extract-vmlinux
-    mv extract-vmlinux /usr/local/bin
-fi
-
-echo "Extracting kernel..."
-extract-vmlinux ubuntu-noble/boot/vmlinuz | tee ubuntu-noble/boot/vmlinuz-6.8.0-31-generic.elf > /dev/null
-mv ubuntu-noble/boot/vmlinuz-6.8.0-31-generic.elf ubuntu-noble/boot/vmlinuz-6.8.0-31-generic
-
 echo "Creating tar archive..."
 tar -czvf ubuntu-24.04_fullvm_xrdp.tar.gz -C ubuntu-noble .
 echo "Tar archive created."
