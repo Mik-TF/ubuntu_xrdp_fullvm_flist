@@ -31,7 +31,7 @@ export PATH=/usr/local/sbin/:/usr/local/bin/:/usr/sbin/:/usr/bin/:/sbin:/bin
 rm /etc/resolv.conf
 echo 'nameserver 1.1.1.1' > /etc/resolv.conf
 apt-get update
-apt-get install cloud-init openssh-server curl initramfs-tools xrdp ufw -y
+apt-get install cloud-init openssh-server curl initramfs-tools -y
 cloud-init clean
 apt-get install linux-modules-extra-6.8.0-31-generic -y
 echo 'fs-virtiofs' >> /etc/initramfs-tools/modules
@@ -53,142 +53,29 @@ chown xrdpuser:xrdpuser /home/xrdpuser/.xsession
 sed -i 's/allowed_users=console/allowed_users=anybody/' /etc/X11/Xwrapper.config
 systemctl enable xrdp
 
+# Setup firewall rules
+ufw allow 3389/tcp
+ufw allow ssh
+echo "y" | ufw enable
+
 apt-get clean
 
 # Set correct ownership and permissions for sudo
 chown root:root /usr/bin/sudo
 chmod 4755 /usr/bin/sudo
 
-# Create the systemd service file for setting sudo permissions
-cat << EOF2 > /etc/systemd/system/set-sudo-permissions.service
-[Unit]
-Description=Set correct ownership and permissions for sudo
-Before=ssh.service
+chmod +x /usr/local/bin/*
 
-[Service]
-Type=oneshot
-ExecStart=/bin/bash -c '/bin/chown root:root /usr/bin/sudo && /bin/chmod 4755 /usr/bin/sudo'
-
-[Install]
-WantedBy=multi-user.target
-EOF2
-
-# Create ufw_setup.sh
-cat << EOF3 > /root/ufw_setup.sh
-#!/bin/bash
-
-# Wait for /mnt/zosrc to be available
-timeout=300
-while [ ! -f /mnt/zosrc ] && [ $timeout -gt 0 ]; do
-    sleep 1
-    timeout=$((timeout-1))
-done
-
-if [ ! -f /mnt/zosrc ]; then
-    echo "Error: /mnt/zosrc not found after waiting" >&2
-    exit 1
-fi
-
-source /mnt/zosrc
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow ssh
-ufw allow from \${LOCALIP}/32 to any port 3389
-ufw limit ssh
-ufw --force enable
-EOF3
-chmod +x /root/ufw_setup.sh
-
-# Create xrdp_setup.sh
-cat << EOF4 > /root/xrdp_setup.sh
-#!/bin/bash
-systemctl start xrdp
-cd ~
-echo "xfce4-session" | tee .xsession
-systemctl restart xrdp
-EOF4
-chmod +x /root/xrdp_setup.sh
-
-# Create xrdp_user.sh
-cat << EOF5 > /root/xrdp_user.sh
-#!/bin/bash
-
-# Wait for /mnt/zosrc to be available
-timeout=300
-while [ ! -f /mnt/zosrc ] && [ $timeout -gt 0 ]; do
-    sleep 1
-    timeout=$((timeout-1))
-done
-
-if [ ! -f /mnt/zosrc ]; then
-    echo "Error: /mnt/zosrc not found after waiting" >&2
-    exit 1
-fi
-
-source /mnt/zosrc
-
-# Only change password if PASSWORD is set
-if [ -n "\${PASSWORD}" ]; then
-    echo "xrdpuser:\${PASSWORD}" | chpasswd
-fi
-EOF5
-chmod +x /root/xrdp_user.sh
-
-# Create systemd services for the new scripts
-cat << EOF6 > /etc/systemd/system/ufw-setup.service
-[Unit]
-Description=Setup UFW rules
-After=network.target
-Before=ssh.service xrdp.service
-
-[Service]
-Type=oneshot
-ExecStart=/root/ufw_setup.sh
-RemainAfterExit=true
-
-[Install]
-WantedBy=multi-user.target
-EOF6
-
-cat << EOF7 > /etc/systemd/system/xrdp-setup.service
-[Unit]
-Description=Setup XRDP
-After=network.target ufw-setup.service
-Before=xrdp.service
-
-[Service]
-Type=oneshot
-ExecStart=/root/xrdp_setup.sh
-RemainAfterExit=true
-
-[Install]
-WantedBy=multi-user.target
-EOF7
-
-cat << EOF8 > /etc/systemd/system/xrdp-user-setup.service
-[Unit]
-Description=Setup XRDP user
-After=network.target ufw-setup.service xrdp-setup.service
-Before=xrdp.service
-
-[Service]
-Type=oneshot
-ExecStart=/root/xrdp_user.sh
-RemainAfterExit=true
-
-[Install]
-WantedBy=multi-user.target
-EOF8
-
-# Enable the services
+# Enable the service
 systemctl enable set-sudo-permissions.service
-systemctl enable ufw-setup.service
-systemctl enable xrdp-setup.service
-systemctl enable xrdp-user-setup.service
 
 EOF
 
 chmod +x ubuntu-noble/root/setup_inside_chroot.sh
+
+# Copy services and scripts into the VM
+cp ./services/* ubuntu-noble/etc/systemd/system/ 2>/dev/null || echo "Warning: Could not copy service files"
+cp ./scripts/* ubuntu-noble/usr/local/bin/ 2>/dev/null || echo "Warning: Could not copy script files"
 
 echo "Entering chroot environment..."
 arch-chroot ubuntu-noble /root/setup_inside_chroot.sh
