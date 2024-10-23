@@ -5,6 +5,8 @@
 - [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
 - [Usage](#usage)
+  - [Manual Method](#manual-method)
+  - [Using Makefile](#using-makefile)
 - [What the Script Does](#what-the-script-does)
 - [Notes](#notes)
 - [Troubleshooting](#troubleshooting)
@@ -27,8 +29,11 @@ This repository contains a script to create a Full VM flist with Ubuntu and XRDP
 - A Linux system with root access
 - Sufficient disk space (at least 10GB free)
 - A ThreeFold ZOS Hub account with an API key
+- `make` utility installed on your system (optional, for Makefile method)
 
 ## Usage
+
+### Manual Method
 
 1. Clone this repository:
    ```
@@ -47,6 +52,21 @@ This repository contains a script to create a Full VM flist with Ubuntu and XRDP
    ```
    Replace `YOUR_API_KEY_HERE` with your actual ThreeFold Hub API key.
 
+### Using Makefile
+
+1. Clone this repository:
+   ```
+   git clone https://github.com/Mik-TF/ubuntu_xrdp_fullvm_flist.git
+   cd ubuntu_xrdp_fullvm_flist
+   ```
+
+2. Run the build command using make:
+   ```
+   make build
+   ```
+
+3. When prompted, enter your ThreeFold ZOS Hub API key.
+
 4. Wait for the script to complete. This may take some time depending on your internet connection and system performance.
 
 5. Once completed, the script will have created and uploaded an flist named `ubuntu-24.04_fullvm_xrdp.tar.gz` to your ThreeFold Hub account.
@@ -63,7 +83,8 @@ This repository contains a script to create a Full VM flist with Ubuntu and XRDP
 ## Notes
 
 - The default non-root user created is `xrdpuser` with password `xrdppassword`. It's recommended to change this password after first login.
-  - You can update your password with the command `sudo passwd`
+  - Simply set the variable PASSWORD="your password here" when deploying the VM on the Dashboard
+  - You can also update your password with the command `sudo passwd` on the VM
 - The script requires an active internet connection throughout its execution.
 - Ensure you have the latest version of the script by pulling from this repository before each use.
 
@@ -79,12 +100,21 @@ For persistent issues, please open an issue in this GitHub repository.
 
 ## Clean Up
 
-To removed the created files after running the script, you can use the following commands:
+To remove the created files after running the script, you can use either of the following methods:
 
+Manual method:
 ```
 sudo rm -rf ubuntu-noble
 sudo rm ubuntu-24.04_fullvm_xrdp.tar.gz
+sudo rm -rf logs
 ```
+
+Using Makefile:
+```
+make delete
+```
+
+Both methods will remove the `ubuntu-noble` directory, the `ubuntu-24.04_fullvm_xrdp.tar.gz` file, and the `logs` directory.
 
 ## Server Side: Dashboard Deployment
 
@@ -132,4 +162,4 @@ You now have a remote access to the desktop environment of your VM.
 
 ## License
 
-This work is under the [Apache 2.0 license](./LICENSE). 
+This work is under the [Apache 2.0 license](./LICENSE).

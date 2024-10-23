@@ -1,3 +1,4 @@
 /ubuntu-noble
+/logs
 *.tar.gz
 ubuntu-24.04_fullvm_xrdp.tar.gz
