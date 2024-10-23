@@ -56,7 +56,7 @@ echo "Updating package lists..."
 apt-get update -y || echo "ERROR: Failed to update package lists"
 
 echo "Installing initial packages..."
-apt-get install -y cloud-init openssh-server curl initramfs-tools || echo "ERROR: Failed to install initial packages"
+apt-get install -y cloud-init openssh-server curl initramfs-tools ufw || echo "ERROR: Failed to install initial packages"
 
 echo "Cleaning cloud-init..."
 cloud-init clean
@@ -90,12 +90,6 @@ echo "Configuring XRDP..."
 sed -i 's/allowed_users=console/allowed_users=anybody/' /etc/X11/Xwrapper.config
 systemctl enable xrdp || echo "WARNING: Failed to enable XRDP service"
 
-# Setup firewall rules
-echo "Setting up firewall rules..."
-ufw allow 3389/tcp
-ufw allow ssh
-echo "y" | ufw enable
-
 echo "Cleaning up packages..."
 apt-get clean
 
@@ -111,6 +105,7 @@ chmod +x /usr/local/bin/*
 echo "Enabling custom services..."
 systemctl enable set_sudo_permissions.service || echo "WARNING: Failed to enable set_sudo_permissions service"
 systemctl enable user_password.service || echo "WARNING: Failed to enable user_password service"
+systemctl enable ufw_setup.service || echo "WARNING: Failed to enable ufw_setup service"
 
 echo "Chroot setup completed"
 EOF
