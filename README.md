@@ -15,7 +15,6 @@
 - [Client Side: Install Remote Desktop Connection for Windows, MAC or Linux](#client-side-install-remote-desktop-connection-for-windows-mac-or-linux)
   - [Download the App](#download-the-app)
   - [Connect Remotely](#connect-remotely)
-- [Conclusion](#conclusion)
 - [License](#license)
 
 ---
@@ -155,10 +154,6 @@ Simply download the app, open it and write the IPv4 address of the VM. You then 
     * the IPv4 Address of the VM
     * the VM root-access username and password
   * You now have remote desktop connection to your VM
-
-## Conclusion
-
-You now have a remote access to the desktop environment of your VM.
 
 ## License
 
