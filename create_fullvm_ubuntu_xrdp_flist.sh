@@ -6,14 +6,6 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# Check if API_KEY provided or not
-if [ -z "$1" ]; then
-    echo "Usage: $0 <API_KEY>"
-    exit 2
-fi
-
-API_KEY=$1
-
 mkdir -p ./logs
 
 # Function to log messages with timestamps
@@ -22,9 +14,30 @@ log_message() {
 }
 
 log_message "Starting script execution"
-log_message "Installing arch-install-scripts package..."
-apt-get update
-apt-get install arch-install-scripts debootstrap -y
+
+# Check if necessary tools are installed
+log_message "Checking if necessary tools are installed..."
+if ! command -v arch-chroot &> /dev/null || ! command -v debootstrap &> /dev/null; then
+    log_message "arch-install-scripts and/or debootstrap are not installed."
+    read -p "Do you want to try installing arch-install-scripts and debootstrap packages via apt-get? (y/n) " answer
+    if [[ $answer =~ ^[Yy]$ ]]; then
+        log_message "Installing arch-install-scripts and debootstrap packages..."
+        apt-get update
+        apt-get install arch-install-scripts debootstrap -y
+        if ! command -v arch-chroot &> /dev/null || ! command -v debootstrap &> /dev/null; then
+            log_message "Error: Failed to install arch-install-scripts and/or debootstrap."
+            log_message "Please install these tools manually and run the script again."
+            exit 1
+        else
+            log_message "Successfully installed necessary tools. Continuing with the script."
+        fi
+    else
+        log_message "Installation skipped. Please install these tools manually and run the script again."
+        exit 1
+    fi
+else
+    log_message "Necessary tools are already installed. Continuing with the script."
+fi
 
 log_message "Starting debootstrap..."
 mkdir -p ubuntu-noble
@@ -56,13 +69,10 @@ echo "Updating package lists..."
 apt-get update -y || echo "ERROR: Failed to update package lists"
 
 echo "Installing initial packages..."
-apt-get install -y cloud-init openssh-server curl initramfs-tools ufw || echo "ERROR: Failed to install initial packages"
+apt-get install -y cloud-init openssh-server curl initramfs-tools ufw linux-virtual || echo "ERROR: Failed to install initial packages"
 
 echo "Cleaning cloud-init..."
 cloud-init clean
-
-echo "Installing extra kernel modules..."
-apt-get install -y linux-modules-extra-6.8.0-31-generic || echo "ERROR: Failed to install extra kernel modules"
 
 echo "Configuring initramfs..."
 echo 'fs-virtiofs' >> /etc/initramfs-tools/modules
@@ -125,24 +135,18 @@ log_message "Cleaning up..."
 rm ubuntu-noble/root/setup_inside_chroot.sh
 rm -rf ubuntu-noble/dev/*
 
-log_message "Checking for extract-vmlinux..."
-if ! command -v extract-vmlinux &>/dev/null; then
-    log_message "extract-vmlinux not found, installing..."
-    curl -O https://raw.githubusercontent.com/torvalds/linux/master/scripts/extract-vmlinux
-    chmod +x extract-vmlinux
-    mv extract-vmlinux /usr/local/bin
-fi
-
-log_message "Extracting kernel..."
-extract-vmlinux ubuntu-noble/boot/vmlinuz | tee ubuntu-noble/boot/vmlinuz-6.8.0-31-generic.elf > /dev/null
-mv ubuntu-noble/boot/vmlinuz-6.8.0-31-generic.elf ubuntu-noble/boot/vmlinuz-6.8.0-31-generic
-
 log_message "Creating tar archive..."
-tar -czvf ubuntu-24.04_fullvm_xrdp.tar.gz -C ubuntu-noble .
+tar -czf ubuntu-24.04_fullvm_xrdp.tar.gz -C ubuntu-noble .
 log_message "Tar archive created."
 
-log_message "Uploading to Threefold Hub..."
-curl -v -X POST -H "Authorization: Bearer $API_KEY" -F "file=@ubuntu-24.04_fullvm_xrdp.tar.gz" https://hub.grid.tf/api/flist/me/upload
-log_message "Upload completed."
+# Check if API_KEY provided or not
+if [ -z "$1" ]; then
+    log_message "No API key provided. Skipping upload to Threefold Hub."
+else
+    API_KEY=$1
+    log_message "Uploading to Threefold Hub..."
+    curl -v -X POST -H "Authorization: Bearer $API_KEY" -F "file=@ubuntu-24.04_fullvm_xrdp.tar.gz" https://hub.grid.tf/api/flist/me/upload
+    log_message "Upload completed."
+fi
 
 log_message "Script execution completed"
