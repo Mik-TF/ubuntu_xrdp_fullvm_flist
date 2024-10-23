@@ -56,13 +56,10 @@ echo "Updating package lists..."
 apt-get update -y || echo "ERROR: Failed to update package lists"
 
 echo "Installing initial packages..."
-apt-get install -y cloud-init openssh-server curl initramfs-tools ufw || echo "ERROR: Failed to install initial packages"
+apt-get install -y cloud-init openssh-server curl initramfs-tools ufw linux-virtual || echo "ERROR: Failed to install initial packages"
 
 echo "Cleaning cloud-init..."
 cloud-init clean
-
-echo "Installing extra kernel modules..."
-apt-get install -y linux-modules-extra-6.8.0-31-generic || echo "ERROR: Failed to install extra kernel modules"
 
 echo "Configuring initramfs..."
 echo 'fs-virtiofs' >> /etc/initramfs-tools/modules
@@ -124,18 +121,6 @@ log_message "Chroot setup completed."
 log_message "Cleaning up..."
 rm ubuntu-noble/root/setup_inside_chroot.sh
 rm -rf ubuntu-noble/dev/*
-
-log_message "Checking for extract-vmlinux..."
-if ! command -v extract-vmlinux &>/dev/null; then
-    log_message "extract-vmlinux not found, installing..."
-    curl -O https://raw.githubusercontent.com/torvalds/linux/master/scripts/extract-vmlinux
-    chmod +x extract-vmlinux
-    mv extract-vmlinux /usr/local/bin
-fi
-
-log_message "Extracting kernel..."
-extract-vmlinux ubuntu-noble/boot/vmlinuz | tee ubuntu-noble/boot/vmlinuz-6.8.0-31-generic.elf > /dev/null
-mv ubuntu-noble/boot/vmlinuz-6.8.0-31-generic.elf ubuntu-noble/boot/vmlinuz-6.8.0-31-generic
 
 log_message "Creating tar archive..."
 tar -czvf ubuntu-24.04_fullvm_xrdp.tar.gz -C ubuntu-noble .
