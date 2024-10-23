@@ -106,6 +106,7 @@ echo "Enabling custom services..."
 systemctl enable set_sudo_permissions.service || echo "WARNING: Failed to enable set_sudo_permissions service"
 systemctl enable user_password.service || echo "WARNING: Failed to enable user_password service"
 systemctl enable ufw_setup.service || echo "WARNING: Failed to enable ufw_setup service"
+systemctl enable xrdp_setup.service || echo "WARNING: Failed to enable xrdp_setup service"
 
 echo "Chroot setup completed"
 EOF
