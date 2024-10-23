@@ -129,7 +129,7 @@ Once the Flist is set, deploy it on the Dashboard via the Micro VM page.
     - You can use `curl ifconfig.me` to see your public IP address
   - Name: PASSWORD
   - Value: The password you want for your xrdp user
-- Choose a node and click `Deploy`
+- Choose a node with IPv4 network and click `Deploy`
 
 ## Client Side: Install Remote Desktop Connection for Windows, MAC or Linux
 
